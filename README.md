@@ -1,69 +1,70 @@
-#  🎓 Lottery dapp
-This repository contains a complete frontend applications to work with 
+# Getting Started with Create React App
 
-<a href="https://github.com/Learn-NEAR/NCD.L1.sample--lottery" target="_blank">NCD.L1.sample--lottery smart contract</a> targeting the NEAR platform:
-1. Vue.Js (main branch)
-2. React (react branch)
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-The example here is playful. It's a toy involving a lottery.
-The goal of this repository is to make it as easy as possible to get started writing frontend with VueJs and React for AssemblyScript contracts built to work with NEAR Protocol.
+## Available Scripts
 
+In the project directory, you can run:
 
-## ⚠️ Warning
-Any content produced by NEAR, or developer resources that NEAR provides, are for educational and inspiration purposes only. NEAR does not encourage, induce or sanction the deployment of any such applications in violation of applicable laws or regulations.
+### `yarn start`
 
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-## Usage
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-![image](https://user-images.githubusercontent.com/38455192/145136911-fe10f671-2137-483a-8326-343f857d095a.png)
+### `yarn test`
 
-<a href="https://www.loom.com/share/835719fe8e2e45c4a2970ed435f62a56" target="_blank">Video demo UI walkthrough</a>
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-You can use this app with contract id`s which was deployed by creators of this repo,  or you can use it with your own deployed  contractId.
-If you are using not yours contractId some functions of the lottery contract will not work because  they are setted to work  only  if owner called this  functions.
+### `yarn build`
 
-Example of such  function:
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-![image](https://user-images.githubusercontent.com/38455192/145134082-bb64a93d-cd45-48e3-bd84-b34f366fdbcb.png)
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-To get possibility to work with the full functionality of the smart contract, you need to paste your contractId inside UI of VueJs deployed dapp or React deployed dapp. 
-Before pasting id make sure that you deployed correct smart contract, in other case this code may  not work as expected.
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-<a href="https://github.com/Learn-NEAR/NCD.L1.sample--lottery" target="_blank">Link to smart contract repo</a>
+### `yarn eject`
 
-<a href="https://www.loom.com/share/1060f789861a4652bfef96ef357cdbb3" target="_blank">How to correctly deploy NCD.L1.sample--lottery smart contract (video tutorial)</a>
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-After you deployed  your contract, you need to paste  id in one of deployed dapps
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-<a href="https://sample-lottery.onrender.com/" target="_blank">Try VueJs deployed app</a>
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-<a href="https://sample-lottery-react.onrender.com/" target="_blank">Try React deployed app</a>
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-### Code walkthrough for NCD students:
-<a href="https://www.loom.com/share/a05799e6d7cf4ab789520e9ca8d28b0a" target="_blank">Vue.Js</a>
+## Learn More
 
-<a href="https://www.loom.com/share/d66f7ee30a1c409ba5166c7bff14bea7" target="_blank">React</a>
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-## Project setup
-In main branch README file is presented setup for Vue.Js, React setup README file is in react branch
-```
-npm install
-```
+To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+### Code Splitting
 
-### Compiles and minifies for production
-```
-npm run build
-```
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### Lints and fixes files
-```
-npm run lint
-```
+### Analyzing the Bundle Size
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `yarn build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
