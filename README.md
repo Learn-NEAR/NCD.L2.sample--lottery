@@ -1,5 +1,5 @@
 #  🎓 Lottery dapp
-This repository contains a complete frontend applications to work with 
+This repository contains a complete frontend applications to work with
 
 <a href="https://github.com/Learn-NEAR/NCD.L1.sample--lottery" target="_blank">NCD.L1.sample--lottery smart contract</a> targeting the NEAR platform:
 1. Vue.Js (main branch)
@@ -24,10 +24,11 @@ You can use this app with contract id`s which was deployed by creators of this r
 If you are using not yours contractId some functions of the lottery contract will not work because  they are setted to work  only  if owner called this  functions.
 
 Example of such  function:
+//TODO: REWRITE TO ANG EXAMPLE
 
 ![image](https://user-images.githubusercontent.com/38455192/145134082-bb64a93d-cd45-48e3-bd84-b34f366fdbcb.png)
 
-To get possibility to work with the full functionality of the smart contract, you need to paste your contractId inside UI of VueJs deployed dapp or React deployed dapp. 
+To get possibility to work with the full functionality of the smart contract, you need to paste your contractId inside UI of VueJs deployed dapp or React deployed dapp.
 Before pasting id make sure that you deployed correct smart contract, in other case this code may  not work as expected.
 
 <a href="https://github.com/Learn-NEAR/NCD.L1.sample--lottery" target="_blank">Link to smart contract repo</a>
@@ -50,25 +51,22 @@ After you deployed  your contract, you need to paste  id in one of deployed dapp
 <a href="https://www.loom.com/share/6a669c2de52d45b9a6b915eeaf89d567" target="_blank">Angular</a>
 
 ## Project setup
-In main branch README file is presented setup for Vue.Js, React setup README file is in react branch
+In main branch README file is presented setup for Vue.Js, React setup README file is in react branch, Angular in angular branch
 ```
+npm i -g @angular/cli
 npm install
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+ng serve
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+ng build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+### Further help
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
