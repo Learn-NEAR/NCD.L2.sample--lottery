@@ -7,7 +7,7 @@ This repository contains a complete frontend applications to work with
 3. Angular (angular branch)
 
 The example here is playful. It's a toy involving a lottery.
-The goal of this repository is to make it as easy as possible to get started writing frontend with VueJs and React for AssemblyScript contracts built to work with NEAR Protocol.
+The goal of this repository is to make it as easy as possible to get started writing frontend with Vue.js, React and Angular for AssemblyScript contracts built to work with NEAR Protocol.
 
 
 ## ⚠️ Warning
