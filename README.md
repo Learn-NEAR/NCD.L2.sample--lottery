@@ -108,7 +108,7 @@ export const near = new Near({
 ``` 
 and creating wallet connection
 ```
-export const wallet = new WalletConnection(near, "sample--lottery--dapp");
+export const wallet = new WalletConnection(near, "NCD.L2.sample--lottery");
 ```
 After this by using Composition API we need to create ```useWallet()``` function and use inside ```signIn()``` and ```signOut()``` functions of wallet object. By doing this, login functionality can now be used in any component. 
 
@@ -117,58 +117,54 @@ And also we in return statement we are returning wallet object, we are doing thi
 ``` useWallet()``` code :
 ```
 export const useWallet = () => {
-
-  const handleSignIn = () => {
-    // redirects user to wallet to authorize your dApp
-    // this creates an access key that will be stored in the browser's local storage
-    // access key can then be used to connect to NEAR and sign transactions via keyStore
-    wallet.requestSignIn({
-      contractId: THANKS_CONTRACT_ID,
-      methodNames: [] // add methods names to restrict access
-    })
-  }
-
-  const handleSignOut = () => {
-    wallet.signOut()
+    const accountId = ref('')
     accountId.value = wallet.getAccountId()
+    const err = ref(null)
+  
+    onMounted(async () => {
+      try {
+        accountId.value = wallet.getAccountId()
+      } catch (e) {
+        err.value = e;
+        console.error(err.value);
+      }
+    });
+  
+    const handleSignIn = () => {
+      wallet.requestSignIn({
+        contractId: CONTRACT_ID,
+        methodNames: [] // add methods names to restrict access
+      })
+    };
+  
+    const handleSignOut = () => {
+      wallet.signOut()
+      accountId.value = wallet.getAccountId()
+    };
+  
+    return {
+      accountId,
+      signIn: handleSignIn,
+      signOut: handleSignOut
+    }
   }
-
-  return {
-    wallet,
-    accountId,
-    err,
-    signIn: handleSignIn,
-    signOut: handleSignOut
-  };
-};
 ```
 
 To work with smart contract we will create separate ```useLottery()``` function with Composition API to split the logic. We are loading the contract inside  ``` /services/near.js:```
 ```
-const thanksContract = getThanksContract()
-const registryContract = getRegistryContract()
-
-function getThanksContract() {
-    return new Contract(
-        wallet.account(), // the account object that is connecting
-        THANKS_CONTRACT_ID, // name of contract you're connecting to
-        {
-            viewMethods: ['get_owner'], // view methods do not change state but usually return a value
-            changeMethods: ['say', 'list', 'summarize', 'transfer'] // change methods modify state
-        }
-    )
+function getLotteryContract() {
+  return new Contract(
+    wallet.account(), // the account object that is connecting
+    CONTRACT_ID, // name of contract you're connecting to
+    {
+      viewMethods: ['get_owner', 'get_winner', 'get_pot', 'get_fee', 'get_fee_strategy', 'get_has_played',
+        'get_last_played', 'get_active', 'explain_fees', 'explain_lottery'], // view methods do not change state but usually return a value
+      changeMethods: ['play', 'configureLottery', 'configureFee', 'reset'] // change methods modify state
+    }
+  )
 }
 
-function getRegistryContract() {
-    return new Contract(
-        wallet.account(), // the account object that is connecting
-        REGISTRY_CONTRACT_ID, // name of contract you're connecting to
-        {
-            viewMethods: ["list_all", "is_registered"], // view methods do not change state but usually return a value
-            changeMethods: ['register'] // change methods modify state
-        }
-    )
-}
+const contract = getLotteryContract()
 ```
 
 and we are creating function to export for each contract function
@@ -183,162 +179,134 @@ export const getMessages = async () => {
 
 example of call with params 
 ```
-//function to send a message anon or not anon
-export const sendMessage = async ({ message, anonymous, attachedDeposit }) => {
-    attachedDeposit = (utils.format.parseNearAmount(attachedDeposit.toString())) // converts yoctoNEAR (10^-24) amount into NEAR
-    return await thanksContract.say(
-        { anonymous: anonymous, message: message },
-        gas,
-        attachedDeposit
-    )
+//function to configure Lottery
+export const configureLottery = async (chance) => {
+  return await contract.configure_lottery(
+    { chance:chance },
+    gas
+  )
 }
+
 
 ```
 
 Then in ```composables/near.js``` we are just importing all logic from ```services/near.js```: 
 ```
- import {
-  wallet,
-  THANKS_CONTRACT_ID,
-  getRecipients,
-  getOwner,
-  isRegistered,
-  sendMessage,
-  getMessages,
-  getSummarizedInfo,
-  transferFundsToOwner
-} from "../services/near";
+import {
+    wallet,
+    CONTRACT_ID,
+    getOwner,
+    getWinner,
+    getPot,
+    getFee,
+    getFeeStrategy,
+    getHasPlayed,
+    getLastPlayed,
+    getActive,
+    getExplainFees,
+    getExplainLottery,
+    play,
+    reset
+  } from "../services/near";
 ```
 
 and using it to store some state of contracts and to call contracts functions: 
 ```
-const owner = ref(null)
-const recipients = ref(null)
-const isLoading = ref(false)
-const isTransferingToOwner = ref(null)
-const messages = ref(null)
-const summarizedInfo = ref(null)
-const err = ref(null)
+export const useLottery = () => {
+      const  owner = ref("")
+      const  winner = ref('')
+      const  pot = ref('')
+      const  fee = ref('')
+      const  feeStrategy = ref('')
+      const  hasPlayed = ref(null)
+      const  lastPlayed = ref(null)
+      const  active = ref(null)
+      const  feesExplanation =  ref('')
+      const  lotteryExplanation  = ref('')
+      const  apiError = ref(null);
 
-export const useContracts = () => {
-
-  const handleGetRecipients = () => {
-    return getRecipients()
-  }
-
-  const handleGetSummarizedInfo = () => {
-    return getSummarizedInfo()
-  }
-
-  const handleGetOwner = () => {
-    return getOwner()
-  }
-
-  const fetchMessages = () => {
-    return getMessages()
-  }
-
-  const handleSendMessage = ({ message, anonymous, attachedDeposit }) => {
-    return sendMessage({ message, anonymous, attachedDeposit });
-  };
-
-  const handleTransfer = () => {
-    return transferFundsToOwner();
-  }
-
-  return {
-    isLoading,
-    isTransferingToOwner,
-    isRegistered,
-    owner,
-    err,
-    getOwner: handleGetOwner,
-    recipients,
-    getRecipients: handleGetRecipients,
-    messages,
-    getMessages: fetchMessages,
-    summarizedInfo,
-    getSummarizedInfo: handleGetSummarizedInfo,
-    sendMessage: handleSendMessage,
-    transferFunds: handleTransfer
-  };
-};
-```
-
-Inside ```/views/Home.vue``` we have lifecycle hook ``` onBeforeMount() ``` where we are getting all the data from the smart contract with ``` useWallet()``` and ``` useContracts()``` functions
-```
-setup() {
-      const { accountId } = useWallet()
-      const { getOwner, owner, messages, getMessages, recipients, getRecipients, summarizedInfo, getSummarizedInfo} = useContracts()
-
-      onBeforeMount(async () => {
-          accountId.value = await wallet.getAccountId()
-          owner.value = await getOwner()
-          recipients.value = await getRecipients()
-          messages.value = mockDonatesHistory
-          if (owner.value == accountId.value) {
-              messages.value = await getMessages()
-              summarizedInfo.value = await getSummarizedInfo()
-            } 
+      onMounted(async () => {
+          try {
+            updateValues()
+          }
+          catch (e) {
+            apiError.value = e;
+            console.log(apiError.value);
+          }
       })
 
-      watch(accountId, async ()=>{
-        if (owner.value == accountId.value) {
-            messages.value = await getMessages()
-            return
+      const updateValues = async () => {
+        try {
+          owner.value = await getOwner()
+          winner.value = await getWinner()
+          pot.value = await getPot()
+          fee.value = await getFee()
+          feeStrategy.value = FeeStrategies[await getFeeStrategy()]
+          hasPlayed.value = wallet.getAccountId() && await getHasPlayed(wallet.getAccountId())
+          lastPlayed.value = await getLastPlayed()
+          active.value = await getActive()
+          feesExplanation.value = await getExplainFees()
+          lotteryExplanation.value = await getExplainLottery()
+        } catch (e) {
+          apiError.value = e;
+          console.log(apiError.value);
         }
-        messages.value = mockDonatesHistory
-      }, {deep:true})
-      
-      return {
-          accountId,
-          getOwner,
-          owner,
-          messages,
-          getMessages,
-          recipients,
-          getRecipients,
-          summarizedInfo,
-          getSummarizedInfo
       }
+
+      const handlePlay = async () => {
+        fee.value = await getFee()
+        hasPlayed.value = await getHasPlayed(wallet.getAccountId())
+        await play(fee.value,hasPlayed.value);
+      };
+
+      const handleReset = async () => {
+        reset();
+      };
+
+      return {
+        owner,
+        winner,
+        pot,
+        fee,
+        feeStrategy,
+        hasPlayed,
+        lastPlayed,
+        active,
+        feesExplanation,
+        lotteryExplanation,
+        apiError,
+        play:handlePlay,
+        reset:handleReset,
+        update: updateValues
+      };
+  };
+```
+
+Inside components we are using the same ``` useWallet()``` and ``` useContracts()``` functions to manage state of dapp. ``` /components/Summarize.vue ``` as an example :
+```
+    import { useWallet } from "@/composables/near"
+import { useLottery } from "@/composables/near"
+export default {
+  setup(){
+    const  { owner, winner, pot, fee, feeStrategy,hasPlayed, lastPlayed, active, feesExplanation, lotteryExplanation,  play,  reset}  = useLottery();
+    const { accountId, signIn,  signOut } = useWallet();
+    return  {
+        owner,
+        winner,
+        pot,
+        fee,
+        feeStrategy,
+        hasPlayed,
+        lastPlayed,
+        active,
+        feesExplanation,
+        lotteryExplanation,
+        play,
+        reset,
+        accountId,
+        signIn,
+        signOut
+    }
   }
 }
-```
-
-And inside components we are using the same ``` useWallet()``` and ``` useContracts()``` functions to manage state of dapp. ``` /components/Summarize.vue ``` as an example :
-```
-    setup() {
-        const { transferFunds, summarizedInfo, getSummarizedInfo } = useContracts()
-        const isTransferingToOwner = ref(false)
-        const onTransfer = ref(false)
-        const toast = useToast()
-
-        async function handleTransfer() {
-            try {
-                isTransferingToOwner.value = true
-                await transferFunds()
-                toast.success(`Transfer success`)
-                onTransfer.value = true
-            } catch (error) {
-                const errorMessage = error?.kind?.ExecutionError
-                toast.error(errorMessage.slice(0, errorMessage.match(', filename').index))
-            }
-            isTransferingToOwner.value = false
-        }
-
-        watch(onTransfer, async () => {
-            if (onTransfer.value) {
-                summarizedInfo.value = await getSummarizedInfo()
-                onTransfer.value = false
-            }
-        }, { deep: true })
-
-        return {
-            isTransferingToOwner,
-            handleTransfer,
-            summarizedInfo,
-            getSummarizedInfo,
-            utils
-        }
-    }
 ```
