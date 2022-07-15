@@ -52,22 +52,133 @@ After you deployed  your contract, you need to paste  id in one of deployed dapp
 <a href="https://www.loom.com/share/6a669c2de52d45b9a6b915eeaf89d567" target="_blank">Angular</a>
 
 ## Project setup
-In main branch README file is presented setup for Vue.Js, React setup README file is in react branch, Angular in angular branch
+To deploy sample--lottery to your account visit <a href="https://github.com/Learn-NEAR/NCD.L1.sample--lottery" target="_blank">this repo (smart contract deployment instructions are inside)</a>
+
+After you deployed  your contract, and you have contract ids, you can input them on a deployed website or you can clone the repo and put contract ids inside src/environments/environment.ts file :
+```
+CONTRACT_ID = "put your thanks contract id here"
+...
+```
+
+After you input your values inside environment.ts file, you need to :
+1. Install Angular CLI (if previously you didn't)
 ```
 npm i -g @angular/cli
-npm install
 ```
 
-### Compiles and hot-reloads for development
+2. Install all dependencies
 ```
-ng serve
+npm i
+```
+3. Run the project locally
+```
+npm run serve
 ```
 
-### Compiles and minifies for production
+Other commands:
+
+Compiles and minifies for production
 ```
-ng build
+npm run build
+```
+Lints and fixes files
+```
+npm run lint
 ```
 
-### Further help
+## 👀 Code walkthrough for Near university students
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+<a href="https://www.loom.com/share/6a669c2de52d45b9a6b915eeaf89d567" >Code walk-through video | TBA |</a>
+
+### -- Contract --
+
+To work with lottery contract was separated inside ``` src/app/services/near.service.ts```.
+```
+  getLotteryContract() {
+    return new Contract(
+      this.wallet.account(), // the account object that is connecting
+      environment.CONTRACT_ID, // name of contract you're connecting to
+      {
+        viewMethods: ['get_owner', 'get_winner', 'get_pot', 'get_fee', 'get_fee_strategy', 'get_has_played', 'get_last_played', 'get_active', 'explain_fees', 'explain_lottery'], // view methods do not change state but usually return a value
+        changeMethods: ['play', 'configure_lottery', 'configure_fee', 'reset'] // change methods modify state
+      }
+    )
+  }
+```
+
+### -- Main Service --
+
+We are using ```near-api-js``` to work with NEAR blockchain. In ``` src/app/services/near.service.ts ``` we are importing classes, functions and configs which we are going to use:
+```
+import { keyStores, Near, Contract, utils, WalletConnection } from "near-api-js";
+```
+
+The class contains two variables
+```
+public near: Near;
+public wallet: WalletConnection;
+```
+
+Then in ``` constructor() ``` we are connecting to NEAR:
+```
+    this.near = new Near({
+      networkId: environment.NETWORK_ID,
+      keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+      nodeUrl: environment.NODE_URL,
+      walletUrl: environment.WALLET_URL,
+      headers: {}
+    });
+``` 
+and creating wallet connection
+```
+this.wallet = new WalletConnection(this.near, "lottery");
+```
+
+that class contain
+
+### -- Lottery Service --
+
+``` src/app/services/lottery.service.ts ``` represents the main container for the functionality needed in the app
+
+We use that class to store all shared data and functions:
+```
+  public FeeStrategies = ['Free', 'Constant', 'Linear', 'Exponential']
+  public owner = '';
+  ...
+  
+  updateValues() {...};
+  handlePlay() {...};
+  handleReset() {...};
+  handleSignIn() {...};
+```
+
+With dependency injection, we are able to share everything with other components. ``` src/app/components/page-title/page-title.component.spec.ts ``` as an example :
+```
+  constructor(public lotteryService: LotteryService) {
+  }
+
+  async handlePlay() {
+    await this.lotteryService.handlePlay();
+  }
+```
+
+## Examples
+``` src/app/services/near.service.ts ```
+### - Function | No Parameters -
+```
+// get winner of the contract, if exists
+getWinner() {
+  return await this.lotteryContract.get_winner();
+};
+```
+
+### - Function | With Parameters -
+```
+// configure Fee
+configureFee({strategy}: {strategy: any}) {
+  return await this.lotteryContract.configure_fee(
+    { strategy }
+  )
+}
+```
+
