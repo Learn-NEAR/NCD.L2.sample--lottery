@@ -1,7 +1,7 @@
 import { keyStores, Near, WalletConnection, utils, Contract } from "near-api-js";
 import BN from "bn.js";
 
-export const CONTRACT_ID = process.env.VUE_APP_CONTRACT_ID;
+export const CONTRACT_ID = localStorage.getItem('CONTRACT_ID');
 const gas = new BN(process.env.VUE_APP_gas);
 
 export const near = new Near({
@@ -16,7 +16,7 @@ export const wallet = new WalletConnection(near, "NCD.L2.sample--lottery");
 function getLotteryContract() {
   return new Contract(
     wallet.account(), // the account object that is connecting
-    CONTRACT_ID, // name of contract you're connecting to
+    localStorage.getItem('CONTRACT_ID'), // name of contract you're connecting to
     {
       viewMethods: ['get_owner', 'get_winner', 'get_pot', 'get_fee', 'get_fee_strategy', 'get_has_played',
         'get_last_played', 'get_active', 'explain_fees', 'explain_lottery'], // view methods do not change state but usually return a value
@@ -107,13 +107,13 @@ export const play = async (fee, hasPlayed) => {
 //function to configure Lottery
 export const configureLottery = async (chance) => {
   return await contract.configure_lottery(
-    { chance:chance },
+    { chance: chance },
     gas
   )
 }
 
 //function to configure Fee
-export const configureFee = async ( strategy ) => {
+export const configureFee = async (strategy) => {
   return contract.configure_fee(
     { strategy: strategy },
     gas
