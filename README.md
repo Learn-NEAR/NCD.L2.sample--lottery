@@ -23,6 +23,8 @@ Example of such function:
 
 ![image](https://user-images.githubusercontent.com/38455192/145134082-bb64a93d-cd45-48e3-bd84-b34f366fdbcb.png)
 
+Also functions like ``` reset ``` can be called only from CLI. So you can reset lottery only from CLI.
+
 To get possibility to work with the full functionality of the smart contract, you need to paste your contractId inside UI of deployed dapp. 
 Before pasting id make sure that you deployed correct smart contract, in other case this code may not work as expected.
 
