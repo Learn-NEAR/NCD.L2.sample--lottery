@@ -1,70 +1,208 @@
-# Getting Started with Create React App
+#  🎓 NCD.L2.sample--lottery dapp
+This repository contains a complete frontend React application to work with 
+<a href="https://github.com/Learn-NEAR/NCD.L1.sample--lottery" target="_blank">NCD.L1.sample--lottery smart contract</a> targeting the NEAR platform:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The example here is playful. It's a toy involving a lottery.
+The goal of this repository is to make it as easy as possible to get started writing frontend with Vue.js, React and Angular for AssemblyScript contracts built to work with NEAR Protocol.
 
-## Available Scripts
 
-In the project directory, you can run:
+## ⚠️ Warning
+Any content produced by NEAR, or developer resources that NEAR provides, are for educational and inspiration purposes only. NEAR does not encourage, induce or sanction the deployment of any such applications in violation of applicable laws or regulations.
 
-### `yarn start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## ⚡  Usage
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+![image](https://user-images.githubusercontent.com/38455192/145136911-fe10f671-2137-483a-8326-343f857d095a.png)
 
-### `yarn test`
+<a href="https://www.loom.com/share/835719fe8e2e45c4a2970ed435f62a56" target="_blank">Video demo UI walkthrough</a>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+You can use this app with contract ids which were deployed by creators of this repo,  or you can use it with your own deployed  contractId.
+If you are using not yours contractId some functions of the lottery contract will not work because  they are set to work  only  if owner called this  functions.
 
-### `yarn build`
+Example of such function:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+![image](https://user-images.githubusercontent.com/38455192/145134082-bb64a93d-cd45-48e3-bd84-b34f366fdbcb.png)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+To get possibility to work with the full functionality of the smart contract, you need to paste your contractId inside UI of deployed dapp. 
+Before pasting id make sure that you deployed correct smart contract, in other case this code may not work as expected.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+<a href="https://github.com/Learn-NEAR/NCD.L1.sample--lottery" target="_blank">Link to smart contract repo</a>
 
-### `yarn eject`
+<a href="https://www.loom.com/share/1060f789861a4652bfef96ef357cdbb3" target="_blank">How to correctly deploy NCD.L1.sample--lottery smart contract (video tutorial)</a>
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+After you deployed  your contract, you need to paste  id in one of deployed dapps
+<a href="https://sample-lottery-react.onrender.com/" target="_blank">Try React deployed app</a>
+or you can clone the repo and put contract ids inside .env file :
+```
+...
+REACT_APP_CONTRACT_ID = "put your smart-contract id here"
+...
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+After you input your values inside .env file, you need to :
+1. Install all dependencies 
+```
+npm install
+```
+or
+```
+yarn
+```
+2. Run the project locally
+```
+npm run start
+```
+or 
+```
+yarn start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Other commands:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Compiles and minifies for production
+```
+npm run build
+```
+or
+```
+yarn build
+```
+Lints and fixes files
+```
+npm run lint
+```
+or
+```
+yarn lint
+```
 
-## Learn More
+## 👀 Code walkthrough for Near university students
+<a href="https://www.loom.com/share/d66f7ee30a1c409ba5166c7bff14bea7" target="_blank">React</a>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+We are using ```near-api-js``` to work with NEAR blockchain. In ``` /services/near.js ``` we are importing classes, functions and configs which we are going to use:
+```
+import { keyStores, Near, Contract, WalletConnection, utils } from "near-api-js";
+```
+Then we are connecting to NEAR:
+```
+// connecting to NEAR, new NEAR is being used here to awoid async/await
+export const near = new Near({
+    networkId: process.env.VUE_APP_networkId,
+    keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+    nodeUrl: process.env.VUE_APP_nodeUrl,
+    walletUrl: process.env.VUE_APP_walletUrl,
+});
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+``` 
+and creating wallet connection
+```
+const getContractID = () => localStorage.getItem('CONTRACT_ID');
+const wallet = () => new WalletConnection(near, getContractID()));
+```
+After this by using API we can use wallet and call signIn() and signOut() functions of wallet object. By doing this, login functionality can now be used in any component.
 
-### Code Splitting
+And also we in return statement we are returning wallet object, we are doing this to call ```wallet.getAccountId()``` to show accountId in ```/hooks/useLottery.jsx```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+``` wallet()``` code :
+```
+export const signIn = () => {
+  return wallet().requestSignIn({ contractId: getContractID() });
+};
 
-### Analyzing the Bundle Size
+export const signOut = () => {
+  return wallet().signOut(getContractID());
+};
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+To work with smart contract we will create separate ```useLottery()``` function with Composition API to split the logic. We are loading the contract inside  ``` /services/near.js:```
+```
+export const contract = () =>
+  new Contract(wallet().account(), getContractID(), {
+    viewMethods: [
+      'get_owner',
+      'get_winner',
+      'get_pot',
+      'get_fee',
+      'get_fee_strategy',
+      'get_has_played',
+      'get_last_played',
+      'get_active',
+      'explain_fees',
+      'explain_lottery',
+    ],
+    changeMethods: ['play', 'configure_lottery', 'configure_fee', 'reset'],
+    sender: wallet().account(),
+  });
+```
 
-### Making a Progressive Web App
+example of call with params 
+```
+//function to play game
+export const play = (fee, hasPlayed) => {
+  const feeNumber = fee.match(/(\d+)/)[0]; //* 1000000000000000000000000
+  const attachedDeposit = utils.format.parseNearAmount(feeNumber);
+  if (hasPlayed) {
+    return contract().play({}, gas, attachedDeposit);
+  } else {
+    return contract().play();
+  }
+};
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+example of call with no params 
+```
+//function to get winner
+export const getWinner = () => {
+  return contract().get_winner();
+};
+```
 
-### Advanced Configuration
+Then in ```hooks/useLottery.jsx``` and ```hooks/useSign.jsx``` we are just importing all logic from ```services/near.js```: For example in ```useSign``` component
+```
+import { signIn, signOut, wallet } from '../services/near';
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+and using it to store some state of contracts and to call contracts functions:
+```
+export const useSign = ({ setApiError }) => {
+  const [accountId, setAccountId] = useState('');
 
-### Deployment
+  const getAccountId = useCallback(async () => {
+    try {
+      setAccountId(await wallet().getAccountId());
+    } catch (error) {
+      setApiError(error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+  useEffect(() => {
+    getAccountId();
+  }, [getAccountId]);
 
-### `yarn build` fails to minify
+  const handleSignIn = () => {
+    signIn();
+  };
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+  const handleSignOut = () => {
+    signOut();
+    getAccountId();
+  };
+
+  return {
+    accountId,
+    signIn: handleSignIn,
+    signOut: handleSignOut,
+  };
+};
+```
+
+Inside ```/src/pages/Home.jsx``` we have lifecycle hook ```useEffect()``` where we are getting all the data from the smart contract And we are using API request from ```services/near.js``` as an example :
+```
+export const Home = () => {
+  const { owner, winner, pot, fee, feeStrategy, hasPlayed, lotteryExplanation, play, reset } = useLottery({
+    setApiError,
+  });
+
+  const { accountId, signIn, signOut } = useSign({ setApiError });
+```
