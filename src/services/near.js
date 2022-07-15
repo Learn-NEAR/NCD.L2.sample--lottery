@@ -13,7 +13,7 @@ export const near = new Near({
 
 export const wallet = new WalletConnection(near, "NCD.L2.sample--lottery");
 
-function getThanksContract() {
+function getLotteryContract() {
   return new Contract(
     wallet.account(), // the account object that is connecting
     CONTRACT_ID, // name of contract you're connecting to
@@ -25,7 +25,7 @@ function getThanksContract() {
   )
 }
 
-const contract = getThanksContract()
+const contract = getLotteryContract()
 
 // --------------------------------------------------------------------------
 // functions to call contract Public VIEW methods
