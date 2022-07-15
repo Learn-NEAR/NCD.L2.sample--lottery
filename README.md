@@ -19,12 +19,14 @@ Any content produced by NEAR, or developer resources that NEAR provides, are for
 
 <a href="https://www.loom.com/share/835719fe8e2e45c4a2970ed435f62a56" target="_blank">Video demo UI walkthrough</a>
 
-You can use this app with contract ids which were deployed by creators of this repo,  or you can use it with your own deployed  contractId.
-If you are using not yours contractId some functions of the lottery contract will not work because  they are set to work  only  if owner called this  functions.
+You can use this app with contract id which were deployed by creators of this repo, or you can use it with your own deployed contractId.
+If you are using not yours contractId some functions of the lottery contract will not work because  they are set to work only if owner called this functions.
 
 Example of such function:
 
 ![image](https://user-images.githubusercontent.com/38455192/145134082-bb64a93d-cd45-48e3-bd84-b34f366fdbcb.png)
+
+And some functions, like ``` reset ```, you can call only from CLI. so to restart lottery you will need CLI.
 
 To get possibility to work with the full functionality of the smart contract, you need to paste your contractId inside UI of deployed dapp. 
 Before pasting id make sure that you deployed correct smart contract, in other case this code may not work as expected.
